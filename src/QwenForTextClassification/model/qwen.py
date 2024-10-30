@@ -1,11 +1,13 @@
 import os
 
+
 from transformers.modeling_attn_mask_utils import (
     _prepare_4d_causal_attention_mask,
     _prepare_4d_causal_attention_mask_for_sdpa,
 )
 from transformers.modeling_outputs import TokenClassifierOutput
 from transformers.models.qwen2.modeling_qwen2 import *
+import logging
 
 # set start index, default is 0. If set to -1, it will disable BiLLM.
 START_INDEX = int(os.getenv("START_INDEX", 0))
@@ -196,9 +198,9 @@ class Qwen2Model(Qwen2PreTrainedModel):
             else:
                 layer_outputs = decoder_layer(
                     hidden_states,
-                    attention_mask=bi_attention_mask
-                    if is_bidirectional
-                    else attention_mask,
+                    attention_mask=(
+                        bi_attention_mask if is_bidirectional else attention_mask
+                    ),
                     position_ids=position_ids,
                     past_key_value=past_key_values,
                     output_attentions=output_attentions,
